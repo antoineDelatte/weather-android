@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">weather</string>
+    <string name="background_picture">Background picture</string>
+    <string name="search_title">Search</string>
+    <string name="search_hint">Search</string>
+    <string name="searched_location_map">Searched location on map</string>
+    <string name="image_error">Image error</string>
+    <string name="temperature_format">%1$.1f°</string>
+</resources>

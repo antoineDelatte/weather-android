@@ -8,5 +8,5 @@ interface IGeocodingHelper {
 
     suspend fun getLocationsByName(locationName: String): Resource<List<Location>>
 
-    suspend fun  getLocationsByCoordinates(latitude: Double, longitude: Double): Resource<List<Location>>
+    suspend fun  getLocationByCoordinates(latitude: Double, longitude: Double): Resource<Location>
 }

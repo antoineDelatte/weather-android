@@ -1,6 +1,8 @@
 package com.example.weather
 
 import android.content.Context
+import com.example.weather.repository.ILocationProvider
+import com.example.weather.repository.LocationProvider
 import com.example.weather.repository.NoInternetInterceptor
 import com.example.weather.repository.retrofit.*
 import com.google.gson.GsonBuilder
@@ -42,6 +44,11 @@ class ApplicationModule {
         return NoInternetInterceptor(context = context)
     }
 
+    @Provides
+    @Singleton
+    fun provideLocationProvider(@ApplicationContext context: Context): ILocationProvider {
+        return LocationProvider(context = context)
+    }
 
     @Provides
     @Singleton
@@ -49,9 +56,9 @@ class ApplicationModule {
         return OkHttpClient
             .Builder()
             .addInterceptor(noInternetInterceptor)
-            .connectTimeout(1, TimeUnit.MINUTES) // connect timeout
-            .readTimeout(1, TimeUnit.MINUTES)    // read timeout
-            .writeTimeout(1, TimeUnit.MINUTES)   // write timeout
+            .connectTimeout(10, TimeUnit.MINUTES) // connect timeout
+            .readTimeout(10, TimeUnit.MINUTES)    // read timeout
+            .writeTimeout(15, TimeUnit.MINUTES)   // write timeout
             .build()
     }
 

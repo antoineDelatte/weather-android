@@ -15,40 +15,44 @@ class GeocodingHelper @Inject constructor(
 
     override suspend fun getLocationsByName(locationName: String): Resource<List<Location>> {
         return safeApiCall {
+            val locations: MutableList<Location>
+            var location: Location
+
             val response: Response<List<GeocodingBindingModel>> =
                 geocodingService.getLocationsByName(locationName)
-            handleResponse(response = response)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    locations = ArrayList()
+                    it.forEach { geocodingBindingModel ->
+                        location = geocodingBindingModel.toLocation()
+                        locations.add(location)
+                    }
+                    return@safeApiCall Resource.Success(locations)
+                }
+                return@safeApiCall Resource.Error(errorCode = ResourceError.NOT_FOUND)
+            }
+            Resource.Error(errorCode = ResourceError.GLOBAL_ERROR)
         }
     }
 
-    override suspend fun getLocationsByCoordinates(
+    override suspend fun getLocationByCoordinates(
         latitude: Double,
         longitude: Double
-    ): Resource<List<Location>> {
-
+    ): Resource<Location> {
         return safeApiCall {
-            val response: Response<List<GeocodingBindingModel>> =
+            var location: Location
+
+            val response: Response<GeocodingBindingModel> =
                 geocodingService.getLocationsByCoordinates(latitude, longitude)
-            handleResponse(response)
-        }
-    }
-
-    private fun handleResponse(response: Response<List<GeocodingBindingModel>>): Resource<List<Location>> {
-        val locations: MutableList<Location>
-        var location: Location
-
-        if (response.isSuccessful) {
-            response.body()?.let {
-                locations = ArrayList()
-                it.forEach { geocodingBindingModel ->
-                    location = geocodingBindingModel.toLocation()
-                    locations.add(location)
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    location = it.toLocation()
+                    return@safeApiCall Resource.Success(location)
                 }
-                return@handleResponse Resource.Success(locations)
+                return@safeApiCall Resource.Error(errorCode = ResourceError.NOT_FOUND)
             }
-            return Resource.Error(errorCode = ResourceError.NOT_FOUND)
+            Resource.Error(errorCode = ResourceError.GLOBAL_ERROR)
         }
-        return Resource.Error(errorCode = ResourceError.GLOBAL_ERROR)
     }
 
 }

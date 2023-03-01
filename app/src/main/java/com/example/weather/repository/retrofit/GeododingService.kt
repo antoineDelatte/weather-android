@@ -18,5 +18,5 @@ interface GeocodingService {
         @Query("lat") latitude: Double,
         @Query("lon") longitude: Double,
         @Query("format") format:String = "json",
-        @Query("addressdetails") addressDetails: Int = 1) : Response<List<GeocodingBindingModel>>
+        @Query("addressdetails") addressDetails: Int = 1) : Response<GeocodingBindingModel>
 }

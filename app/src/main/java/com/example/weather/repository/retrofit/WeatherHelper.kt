@@ -1,6 +1,5 @@
 package com.example.weather.repository.retrofit
 
-import android.util.Log
 import com.example.weather.ResourceError
 import com.example.weather.model.Resource
 import com.example.weather.model.WeatherForecast

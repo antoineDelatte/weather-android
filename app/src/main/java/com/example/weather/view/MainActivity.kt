@@ -1,15 +1,17 @@
 package com.example.weather.view
 
-import android.graphics.drawable.Drawable
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View.INVISIBLE
-import android.view.View.VISIBLE
+import android.view.View
+import android.view.View.*
 import android.widget.SearchView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
+import com.example.weather.NotGrantedPermissionException
 import com.example.weather.R
 import com.example.weather.ResourceError
 import com.example.weather.databinding.ActivityMainBinding
@@ -19,8 +21,9 @@ import com.example.weather.model.WeatherSituation
 import com.example.weather.viewModel.WeatherViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnClickListener {
 
     private val weatherViewModel: WeatherViewModel by viewModels()
 
@@ -54,6 +57,8 @@ class MainActivity : AppCompatActivity() {
                 return false
             }
         })
+
+        binding.currentLocationButton.setOnClickListener(this)
     }
 
     private fun resetAll() {
@@ -64,8 +69,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onSuccess(weatherForecast: WeatherForecast) {
-        var locationName: String
-
         val backgroundImage = when (weatherForecast.weatherSituation) {
             WeatherSituation.SUNNY -> ContextCompat.getDrawable(
                 baseContext,
@@ -104,10 +107,10 @@ class MainActivity : AppCompatActivity() {
                 R.drawable.thunderstorm
             )
         }
-        if (weatherForecast.location.name != null) {
-            locationName = weatherForecast.location.name!!
+        val locationName: String = if (weatherForecast.location.name != null) {
+            weatherForecast.location.name!!
         } else {
-            locationName = binding.searchView.query.toString()
+            binding.searchView.query.toString()
         }
         binding.locationNameTextView.text = locationName
         binding.locationNameTextView.visibility = VISIBLE
@@ -121,6 +124,7 @@ class MainActivity : AppCompatActivity() {
         val drawable = when(errorCode) {
             ResourceError.NOT_FOUND -> ContextCompat.getDrawable(baseContext, R.drawable.not_found_error)
             ResourceError.INTERNET_ERROR -> ContextCompat.getDrawable(baseContext, R.drawable.no_internet_error)
+            ResourceError.CURRENT_LOCATION_NOT_FOUND -> ContextCompat.getDrawable(baseContext, R.drawable.location_not_found_error)
             ResourceError.GLOBAL_ERROR -> ContextCompat.getDrawable(baseContext, R.drawable.global_error)
         }
         binding.imageError.setImageDrawable(drawable)
@@ -130,6 +134,69 @@ class MainActivity : AppCompatActivity() {
 
     private fun onLoading() {
         binding.loading.visibility = VISIBLE
+    }
+
+    override fun onClick(v: View?) {
+        when(v?.id) {
+            R.id.currentLocationButton -> {
+                resetAll()
+                binding.searchView.setQuery("", false)
+                binding.searchView.clearFocus()
+                getForecastForCurrentLocation()
+            }
+        }
+    }
+
+    private fun getForecastForCurrentLocation() {
+        val locationPermissionGranted = checkLocationPermission()
+        if (locationPermissionGranted) {
+            try {
+                weatherViewModel.getForecastForCurrentLocation()
+            } catch (e: NotGrantedPermissionException) {
+                getForecastForCurrentLocation()
+            }
+        } else {
+            askLocationPermission()
+        }
+    }
+
+    private fun checkLocationPermission(): Boolean {
+        return (ActivityCompat.checkSelfPermission(
+                baseContext,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
+                baseContext,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        )
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        Log.i("permission result", requestCode.toString() + permissions.toString() + grantResults.toString())
+        if (requestCode == LOCATION_PERMISSIONS_REQUEST_CODE) {
+            if (grantResults.any { result: Int -> result == PackageManager.PERMISSION_GRANTED }) {
+                getForecastForCurrentLocation()
+            } else {
+                binding.currentLocationButton.visibility = GONE
+            }
+        }
+    }
+
+
+    private fun askLocationPermission() {
+        ActivityCompat.requestPermissions(this, arrayOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ), LOCATION_PERMISSIONS_REQUEST_CODE)
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSIONS_REQUEST_CODE = 1
     }
 
 }

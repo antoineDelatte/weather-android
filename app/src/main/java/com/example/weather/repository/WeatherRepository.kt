@@ -3,28 +3,25 @@ package com.example.weather.repository
 import com.example.weather.ResourceError
 import com.example.weather.model.Location
 import com.example.weather.model.WeatherForecast
-import com.example.weather.repository.retrofit.GeocodingHelper
 import com.example.weather.model.Resource
-import com.example.weather.repository.retrofit.WeatherHelper
+import com.example.weather.repository.retrofit.IGeocodingHelper
+import com.example.weather.repository.retrofit.IWeatherHelper
 import javax.inject.Inject
 
 class WeatherRepository @Inject constructor(
-    private val weatherHelper: WeatherHelper,
-    private val geocodingHelper: GeocodingHelper) {
+    private val weatherHelper: IWeatherHelper,
+    private val geocodingHelper: IGeocodingHelper
+) {
 
     suspend fun getForecastByCoordinates(latitude: Double, longitude: Double) : Resource<WeatherForecast> {
-        val weatherForecastResource: Resource<WeatherForecast>
-        val locationsResource: Resource<List<Location>>
         val location: Location
 
-        weatherForecastResource = weatherHelper.getForecastByCoordinates(latitude, longitude)
-        locationsResource = geocodingHelper.getLocationsByCoordinates(latitude, longitude)
+        val weatherForecastResource: Resource<WeatherForecast> =
+            weatherHelper.getForecastByCoordinates(latitude, longitude)
+        val locationResource: Resource<Location> =
+            geocodingHelper.getLocationByCoordinates(latitude, longitude)
         if (weatherForecastResource.data != null) {
-            if (locationsResource.data != null && locationsResource.data.isNotEmpty()) {
-                location = locationsResource.data.first()
-            } else {
-                location = Location(latitude, longitude)
-            }
+            location = locationResource.data ?: Location(latitude, longitude)
             weatherForecastResource.data.location = location
         }
         return weatherForecastResource
@@ -33,7 +30,7 @@ class WeatherRepository @Inject constructor(
     suspend fun getForecastByLocationName(locationName: String): Resource<WeatherForecast> {
         val locationsResource: Resource<List<Location>>
         var location: Location?
-        var weatherForecastResource: Resource<WeatherForecast>
+        val weatherForecastResource: Resource<WeatherForecast>
 
         locationsResource = geocodingHelper.getLocationsByName(locationName)
         if (locationsResource.data != null && locationsResource.data.isNotEmpty()) {
@@ -50,7 +47,7 @@ class WeatherRepository @Inject constructor(
             weatherForecastResource =
                 weatherHelper.getForecastByCoordinates(location.latitude, location.longitude)
             if (weatherForecastResource.data != null) {
-                weatherForecastResource.data!!.location = location
+                weatherForecastResource.data.location = location
             }
             return weatherForecastResource
         } else if (locationsResource.errorCode != null) {

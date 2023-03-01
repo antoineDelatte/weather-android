@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="background_picture">Image de fond</string>
+    <string name="search_title">Recherche</string>
+    <string name="image_error">Image d\'erreur</string>
+    <string name="current_location_weather_button">Bouton pour obtenir la météo pour la position actuelle</string>
+    <string name="enter_a_city_name">Entrez le nom d\'une ville…</string>
+    <string name="app_name">Météo</string>
+</resources>

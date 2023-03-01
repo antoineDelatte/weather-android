@@ -27,12 +27,12 @@
         android:id="@+id/temperatureTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
         android:layout_marginTop="32dp"
         android:text="@{"
         android:textColor="@color/white"
         android:textSize="48sp"
         android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/locationNameTextView" />
 
@@ -40,11 +40,20 @@
         android:id="@+id/locationNameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:autoSizeMaxTextSize="40sp"
+        android:autoSizeMinTextSize="12sp"
+        android:autoSizeTextType="uniform"
+        android:gravity="center"
         android:textColor="@color/white"
         android:textSize="64sp"
         android:textStyle="bold"
         android:visibility="invisible"
+        app:autoSizeMaxTextSize="40sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeTextType="uniform"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchView" />
@@ -60,7 +69,8 @@
         android:focusable="auto"
         android:focusableInTouchMode="true"
         android:iconifiedByDefault="false"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:queryHint="@string/enter_a_city_name"
+        app:layout_constraintEnd_toStartOf="@+id/currentLocationButton"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -90,5 +100,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/temperatureTextView"
         app:srcCompat="@drawable/global_error" />
+
+    <ImageButton
+        android:id="@+id/currentLocationButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/current_location_weather_button"
+        app:layout_constraintBottom_toBottomOf="@+id/searchView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/searchView"
+        app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

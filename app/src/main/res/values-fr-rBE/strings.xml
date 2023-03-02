@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Météo</string>
     <string name="background_picture">Image de fond</string>
     <string name="search_title">Recherche</string>
     <string name="image_error">Image d\'erreur</string>
     <string name="current_location_weather_button">Bouton pour obtenir la météo pour la position actuelle</string>
     <string name="enter_a_city_name">Entrez le nom d\'une ville…</string>
-    <string name="app_name">Météo</string>
+    <string name="instruction">Bienvenue\nPour commencer, entrez le nom d\'un emplacement géographique ou appuyez sur l\'icône de votre position pour obtenir la situation météréologique actuelle.</string>
+    <string name="not_found_error_message">Nous n\'avons pas trouvé !</string>
+    <string name="internet_error_message">Veuillez vous connecter à internet !</string>
+    <string name="location_error_message">Veuillez activer l\'accès à votre position !</string>
+    <string name="global_error_message">Veuillez réessayez plus tard !</string>
 </resources>

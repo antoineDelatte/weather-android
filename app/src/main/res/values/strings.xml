@@ -1,9 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">weather</string>
+    <string name="app_name">Weather</string>
     <string name="background_picture">Background picture</string>
     <string name="search_title">Search</string>
     <string name="image_error">Image error</string>
     <string name="temperature_format" translatable="false">%1$.1f°</string>
     <string name="current_location_weather_button">Button to request the forecast for the current location</string>
     <string name="enter_a_city_name">Enter a city name…</string>
+    <string name="instruction">Welcome\nTo get started, enter the name of a geographical location or tap on the icon of your location to get the current weather situation.</string>
+    <string name="not_found_error_message">We haven\'t found!</string>
+    <string name="internet_error_message">Please connect to the internet!</string>
+    <string name="location_error_message">Please enable access to your position!</string>
+    <string name="global_error_message">Please try again later !</string>
 </resources>

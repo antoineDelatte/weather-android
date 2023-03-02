@@ -2,6 +2,7 @@ package com.example.weather.view
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
     private fun resetAll() {
+        binding.helpMessage.visibility = INVISIBLE
         binding.loading.visibility = INVISIBLE
         binding.imageError.visibility = INVISIBLE
         binding.locationNameTextView.visibility = INVISIBLE
@@ -121,14 +123,31 @@ class MainActivity : AppCompatActivity(), OnClickListener {
     }
 
     private fun onError(errorCode: ResourceError) {
-        val drawable = when(errorCode) {
-            ResourceError.NOT_FOUND -> ContextCompat.getDrawable(baseContext, R.drawable.not_found_error)
-            ResourceError.INTERNET_ERROR -> ContextCompat.getDrawable(baseContext, R.drawable.no_internet_error)
-            ResourceError.CURRENT_LOCATION_NOT_FOUND -> ContextCompat.getDrawable(baseContext, R.drawable.location_not_found_error)
-            ResourceError.GLOBAL_ERROR -> ContextCompat.getDrawable(baseContext, R.drawable.global_error)
+        val drawable: Drawable?
+        val errorMessage: String
+        when(errorCode) {
+            ResourceError.NOT_FOUND -> {
+                drawable = ContextCompat.getDrawable(baseContext, R.drawable.not_found_error)
+                errorMessage = getString(R.string.not_found_error_message)
+            }
+            ResourceError.INTERNET_ERROR -> {
+                drawable = ContextCompat.getDrawable(baseContext, R.drawable.no_internet_error)
+                errorMessage = getString(R.string.internet_error_message)
+            }
+            ResourceError.CURRENT_LOCATION_NOT_FOUND -> {
+                drawable =
+                    ContextCompat.getDrawable(baseContext, R.drawable.location_not_found_error)
+                errorMessage = getString(R.string.location_error_message)
+            }
+            ResourceError.GLOBAL_ERROR -> {
+                drawable = ContextCompat.getDrawable(baseContext, R.drawable.global_error)
+                errorMessage = getString(R.string.global_error_message)
+            }
         }
         binding.imageError.setImageDrawable(drawable)
         binding.imageError.visibility = VISIBLE
+        binding.helpMessage.text = errorMessage
+        binding.helpMessage.visibility = VISIBLE
         binding.background.visibility = INVISIBLE
     }
 
@@ -177,7 +196,6 @@ class MainActivity : AppCompatActivity(), OnClickListener {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.i("permission result", requestCode.toString() + permissions.toString() + grantResults.toString())
         if (requestCode == LOCATION_PERMISSIONS_REQUEST_CODE) {
             if (grantResults.any { result: Int -> result == PackageManager.PERMISSION_GRANTED }) {
                 getForecastForCurrentLocation()
